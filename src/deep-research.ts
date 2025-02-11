@@ -1,4 +1,3 @@
-import FirecrawlApp, { SearchResponse } from '@mendable/firecrawl-js';
 import { compact } from 'lodash-es';
 import pLimit from 'p-limit';
 import { z } from 'zod';
@@ -6,6 +5,9 @@ import { z } from 'zod';
 import { generateObject, trimPrompt } from './ai';
 import { systemPrompt } from './prompt';
 import { OutputManager } from './output-manager';
+
+// Import the SearXNGClient (assuming it's in searxng_client.ts)
+import { SearXNGClient } from './searxng_client'; // Adjust the path as needed
 
 // Initialize output manager for coordinated console/progress output
 const output = new OutputManager();
@@ -43,12 +45,8 @@ type ResearchResult = {
 // increase this if you have higher API rate limits
 const ConcurrencyLimit = 2;
 
-// Initialize Firecrawl with optional API key and optional base url
-
-const firecrawl = new FirecrawlApp({
-  apiKey: process.env.FIRECRAWL_KEY ?? '',
-  apiUrl: process.env.FIRECRAWL_BASE_URL,
-});
+// Initialize SearXNG Client:
+const searx = new SearXNGClient();
 
 // take en user query, return a list of SERP queries
 async function generateSerpQueries({
@@ -96,16 +94,17 @@ async function generateSerpQueries({
 
 async function processSerpResult({
   query,
-  result,
+  results, // Changed from result: SearchResponse to results: any[]
   numLearnings = 3,
   numFollowUpQuestions = 3,
 }: {
   query: string;
-  result: SearchResponse;
+  results: any[]; // Changed from result: SearchResponse to results: any[]
   numLearnings?: number;
   numFollowUpQuestions?: number;
 }) {
-  const contents = compact(result.data.map(item => item.markdown)).map(
+  // Adapting to SearXNG's result structure:  Assuming 'parsed_content' field
+  const contents = compact(results.map(item => item.parsed_content)).map(
     content => trimPrompt(content, 25_000),
   );
   log(`Ran ${query}, found ${contents.length} contents`);
@@ -212,20 +211,17 @@ export async function deepResearch({
     serpQueries.map((serpQuery: SerpQuery) =>
       limit(async () => {
         try {
-          const result = await firecrawl.search(serpQuery.query, {
-            timeout: 15000,
-            limit: 5,
-            scrapeOptions: { formats: ['markdown'] },
-          });
+          // Use SearXNGClient instead of Firecrawl
+          const searchResults = await searx.search_and_parse(serpQuery.query);
 
           // Collect URLs from this search
-          const newUrls = compact(result.data.map(item => item.url));
+          const newUrls = compact(searchResults.map(item => item.url));
           const newBreadth = Math.ceil(breadth / 2);
           const newDepth = depth - 1;
 
           const newLearnings = await processSerpResult({
             query: serpQuery.query,
-            result,
+            results: searchResults,  // Pass the SearXNG results
             numFollowUpQuestions: newBreadth,
           });
           const allLearnings = [...learnings, ...newLearnings.learnings];
