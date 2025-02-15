@@ -78,7 +78,7 @@ flowchart TB
 
 - Node.js environment
 - API keys for:
-  - Firecrawl API (for web search and content extraction)
+  - SearXNG API (for web search and content extraction, [localhost:8888](http://localhost:8888/))
   - OpenAI API (for o3 mini model)
   - Gemini API (for gemini thinking model)
 
@@ -96,7 +96,7 @@ npm install
 3. Set up environment variables in a `.env.local` file:
 
 ```bash
-FIRECRAWL_KEY="your_firecrawl_key"
+FIRECRAWL_KEY="your_firecrawl_key" (you can leave it blank as this version defaults to SearXNG)
 # If you want to use your self-hosted Firecrawl, add the following below:
 # FIRECRAWL_BASE_URL="http://localhost:3002"
 
