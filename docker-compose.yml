@@ -5,3 +5,4 @@ services:
       - .env.local
     tty: true
     stdin_open: true
+    

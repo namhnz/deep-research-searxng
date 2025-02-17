@@ -5,12 +5,14 @@ import { systemPrompt } from './prompt';
 export async function generateFeedback({
   query,
   numQuestions = 3,
+  language = "English",
 }: {
   query: string;
   numQuestions?: number;
+  language?: string;
 }) {
   const userFeedback = await generateObject({
-    system: systemPrompt(),
+    system: systemPrompt({ language }),
     prompt: `Given the following query from the user, ask some follow up questions to clarify the research direction. Return a maximum of ${numQuestions} questions, but feel free to return less if the original query is clear: <query>${query}</query>`,
     schema: z.object({
       questions: z

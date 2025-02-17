@@ -1,9 +1,9 @@
 import * as fs from 'fs/promises';
 import * as readline from 'readline';
 
+import { modelProvider } from './ai';
 import { deepResearch, writeFinalReport } from './deep-research';
 import { generateFeedback } from './feedback';
-import { modelProvider } from './ai';
 import { OutputManager } from './output-manager';
 
 const output = new OutputManager();
@@ -30,17 +30,22 @@ function askQuestion(query: string): Promise<string> {
 // run the agent
 async function run() {
   const modelChoice = await askQuestion(
-    'Select AI model (1 for OpenAI, 2 for Gemini, default 1): ',
+    'Select AI model (1 for OpenAI, 2 for Gemini, default 2): ',
   );
 
-  if (modelChoice === '2') {
-    modelProvider.setProvider('gemini');
-  } else {
+  if (modelChoice === '1') {
     modelProvider.setProvider('openai');
+  } else {
+    modelProvider.setProvider('gemini');
   }
 
   // Get initial query
   const initialQuery = await askQuestion('What would you like to research? ');
+
+  // Get response language
+  const language =
+    (await askQuestion('Enter response language (default English): ')) ||
+    'English';
 
   // Get breath and depth parameters
   const breadth =
@@ -84,26 +89,26 @@ ${followUpQuestions.map((q: string, i: number) => `Q: ${q}\nA: ${answers[i]}`).j
   log('\nResearching your topic...');
 
   log('\nStarting research with progress tracking...\n');
-  
+
   const { learnings, visitedUrls } = await deepResearch({
     query: combinedQuery,
     breadth,
     depth,
-    onProgress: (progress) => {
+    language,
+    onProgress: progress => {
       output.updateProgress(progress);
     },
   });
 
   log(`\n\nLearnings:\n\n${learnings.join('\n')}`);
-  log(
-    `\n\nVisited URLs (${visitedUrls.length}):\n\n${visitedUrls.join('\n')}`,
-  );
+  log(`\n\nVisited URLs (${visitedUrls.length}):\n\n${visitedUrls.join('\n')}`);
   log('Writing final report...');
 
   const report = await writeFinalReport({
     prompt: combinedQuery,
     learnings,
     visitedUrls,
+    language,
   });
 
   // Save report to file
