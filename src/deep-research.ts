@@ -12,6 +12,7 @@ import { OutputManager } from './output-manager';
 import { systemPrompt } from './prompt';
 // Import the SearXNGClient (assuming it's in searxng_client.ts)
 import { SearXNGClient } from './searxng_client'; // Adjust the path as needed
+import { blacklistedWebDomains } from './blacklisted-webs';
 
 // Initialize output manager for coordinated console/progress output
 const output = new OutputManager();
@@ -47,7 +48,7 @@ type ResearchResult = {
 };
 
 // increase this if you have higher API rate limits
-const ConcurrencyLimit = 2;
+const ConcurrencyLimit = 1;
 
 // Initialize SearXNG Client:
 const searx = new SearXNGClient();
@@ -231,6 +232,11 @@ export async function deepResearch({
           let successScrapedUrlsCount: number = 0;
           const successScrapedResults: ScrapeResponse[] = [];
           for (const url of foundUrls) {
+            if(blacklistedWebDomains.some(domain => url.includes(domain))) {
+              log(`Skipping blacklisted (no text content) URL: ${url}`);
+              continue;
+            }
+            log(`====> Scraping URL: ${url}`);
             try {
               const scrapeResult = await firecrawl.scrapeUrl(url, {
                 formats: ['markdown'],

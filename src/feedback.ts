@@ -5,11 +5,11 @@ import { systemPrompt } from './prompt';
 export async function generateFeedback({
   query,
   numQuestions = 3,
-  language = "English",
+  language,
 }: {
   query: string;
   numQuestions?: number;
-  language?: string;
+  language: string;
 }) {
   const userFeedback = await generateObject({
     system: systemPrompt({ language }),

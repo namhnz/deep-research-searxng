@@ -66,6 +66,7 @@ async function run() {
   // Generate follow-up questions
   const followUpQuestions = await generateFeedback({
     query: initialQuery,
+    language,
   });
 
   log(
