@@ -418,3 +418,59 @@ export const blacklistedWebDomains = [
   'providr.com',
   'slixa.com',
 ];
+
+export function isBlacklistedWeb(url: string): boolean {
+  try {
+    const urlWithoutQuery = url.split("?")[0]?.toLowerCase();
+    return blacklistedWebDomains.some((domain) => urlWithoutQuery?.includes(domain));
+  } catch (error) {
+    console.error(`Error processing URL in isBlacklistedWeb`, {
+      method: "isBlacklistedWeb",
+      error,
+    });
+    return false;
+  }
+}
+
+export function isFile(url: string): boolean {
+  const fileExtensions = [
+    ".png",
+    ".jpg",
+    ".jpeg",
+    ".gif",
+    ".css",
+    ".js",
+    ".ico",
+    ".svg",
+    ".tiff",
+    ".pdf",
+    ".zip",
+    ".exe",
+    ".dmg",
+    ".mp4",
+    ".mp3",
+    ".wav",
+    ".pptx",
+    ".docx",
+    ".xlsx",
+    ".xml",
+    ".avi",
+    ".flv",
+    ".woff",
+    ".ttf",
+    ".woff2",
+    ".webp",
+    ".inc",
+  ];
+
+  try {
+    const urlWithoutQuery = url.split("?")[0]?.toLowerCase();
+    return fileExtensions.some((ext) => urlWithoutQuery?.endsWith(ext));
+  } catch (error) {
+    console.error(`Error processing URL in isFile`, {
+      method: "isFile",
+      error,
+    });
+    return false;
+  }
+}

@@ -12,7 +12,7 @@ import { OutputManager } from './output-manager';
 import { systemPrompt } from './prompt';
 // Import the SearXNGClient (assuming it's in searxng_client.ts)
 import { SearXNGClient } from './searxng_client'; // Adjust the path as needed
-import { blacklistedWebDomains } from './blacklisted-webs';
+import { blacklistedWebDomains } from './blacklisted-rules';
 
 // Initialize output manager for coordinated console/progress output
 const output = new OutputManager();
@@ -232,10 +232,12 @@ export async function deepResearch({
           let successScrapedUrlsCount: number = 0;
           const successScrapedResults: ScrapeResponse[] = [];
           for (const url of foundUrls) {
+            // Loại bỏ các trang không thể scrape nội dung văn bản
             if(blacklistedWebDomains.some(domain => url.includes(domain))) {
               log(`Skipping blacklisted (no text content) URL: ${url}`);
               continue;
             }
+            // Loại bỏ các file pdf
             log(`====> Scraping URL: ${url}`);
             try {
               const scrapeResult = await firecrawl.scrapeUrl(url, {
