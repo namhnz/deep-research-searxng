@@ -417,15 +417,18 @@ export const blacklistedWebDomains = [
   'companionscout.com',
   'providr.com',
   'slixa.com',
+  'bilibili.tv',
 ];
 
 export function isBlacklistedWeb(url: string): boolean {
   try {
-    const urlWithoutQuery = url.split("?")[0]?.toLowerCase();
-    return blacklistedWebDomains.some((domain) => urlWithoutQuery?.includes(domain));
+    const urlWithoutQuery = url.split('?')[0]?.toLowerCase();
+    return blacklistedWebDomains.some(domain =>
+      urlWithoutQuery?.includes(domain),
+    );
   } catch (error) {
     console.error(`Error processing URL in isBlacklistedWeb`, {
-      method: "isBlacklistedWeb",
+      method: 'isBlacklistedWeb',
       error,
     });
     return false;
@@ -434,41 +437,43 @@ export function isBlacklistedWeb(url: string): boolean {
 
 export function isFile(url: string): boolean {
   const fileExtensions = [
-    ".png",
-    ".jpg",
-    ".jpeg",
-    ".gif",
-    ".css",
-    ".js",
-    ".ico",
-    ".svg",
-    ".tiff",
-    ".pdf",
-    ".zip",
-    ".exe",
-    ".dmg",
-    ".mp4",
-    ".mp3",
-    ".wav",
-    ".pptx",
-    ".docx",
-    ".xlsx",
-    ".xml",
-    ".avi",
-    ".flv",
-    ".woff",
-    ".ttf",
-    ".woff2",
-    ".webp",
-    ".inc",
+    '.png',
+    '.jpg',
+    '.jpeg',
+    '.gif',
+    '.css',
+    '.js',
+    '.ico',
+    '.svg',
+    '.tiff',
+    '.pdf',
+    '.zip',
+    '.exe',
+    '.dmg',
+    '.mp4',
+    '.mp3',
+    '.wav',
+    '.pptx',
+    '.docx',
+    '.xlsx',
+    '.xml',
+    '.avi',
+    '.flv',
+    '.woff',
+    '.ttf',
+    '.woff2',
+    '.webp',
+    '.inc',
+    // ".txt",
+    // ".csv",
   ];
 
   try {
-    const urlWithoutQuery = url.split("?")[0]?.toLowerCase();
-    return fileExtensions.some((ext) => urlWithoutQuery?.endsWith(ext));
+    const urlWithoutQuery = url.split('?')[0]?.toLowerCase();
+    return fileExtensions.some(ext => urlWithoutQuery?.endsWith(ext));
   } catch (error) {
     console.error(`Error processing URL in isFile`, {
-      method: "isFile",
+      method: 'isFile',
       error,
     });
     return false;

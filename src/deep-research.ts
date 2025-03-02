@@ -12,7 +12,7 @@ import { OutputManager } from './output-manager';
 import { systemPrompt } from './prompt';
 // Import the SearXNGClient (assuming it's in searxng_client.ts)
 import { SearXNGClient } from './searxng_client'; // Adjust the path as needed
-import { blacklistedWebDomains } from './blacklisted-rules';
+import { blacklistedWebDomains, isFile } from './blacklisted-rules';
 
 // Initialize output manager for coordinated console/progress output
 const output = new OutputManager();
@@ -48,7 +48,7 @@ type ResearchResult = {
 };
 
 // increase this if you have higher API rate limits
-const ConcurrencyLimit = 1;
+const ConcurrencyLimit = 2;
 
 // Initialize SearXNG Client:
 const searx = new SearXNGClient();
@@ -238,13 +238,20 @@ export async function deepResearch({
               continue;
             }
             // Loại bỏ các file pdf
-            log(`====> Scraping URL: ${url}`);
+            if(isFile(url)) {
+              log(`Skipping file URL: ${url}`);
+              continue;
+            }
+
+            log(`====>${successScrapedUrlsCount + 1}: Scraping URL: ${url}`);
             try {
               const scrapeResult = await firecrawl.scrapeUrl(url, {
                 formats: ['markdown'],
                 excludeTags: ['#ad', '#footer', '#nav', '#header'],
                 blockAds: true,
-                // timeout: 30_000,
+                timeout: 60_000,
+                waitFor: 30_000,
+                onlyMainContent: true,
               });
               if (
                 scrapeResult.success &&

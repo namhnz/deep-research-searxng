@@ -5,6 +5,7 @@ import { modelProvider } from './ai';
 import { deepResearch, writeFinalReport } from './deep-research';
 import { generateFeedback } from './feedback';
 import { OutputManager } from './output-manager';
+import { getAllLanguagesInString, languagesList } from './languages-list';
 
 const output = new OutputManager();
 
@@ -44,8 +45,8 @@ async function run() {
 
   // Get response language
   const language =
-    (await askQuestion('Enter response language (default English): ')) ||
-    'English';
+    (await askQuestion(`Enter response language (default Vietnamese, languages supported are: ${getAllLanguagesInString()}): `)) ||
+    'Vietnamese';
 
   // Get breath and depth parameters
   const breadth =

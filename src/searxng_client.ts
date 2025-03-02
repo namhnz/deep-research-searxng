@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import { languagesList } from './languages-list';
 // import * as cheerio from 'cheerio';
 // import { Readability } from '@mozilla/readability';
 // import { JSDOM } from 'jsdom';
@@ -20,24 +21,6 @@ export class SearXNGClient {
     // private parsingTimeout = 15;  // Seconds
     // private max_content_length = 50000; // characters before trimming at a later stage (token level)
     // private max_workers = 5;
-
-    private languagesList: { [char: string]: string } = {
-        "english": "en",
-        "spanish": "es",
-        "french": "fr",
-        "german": "de",
-        "italian": "it",
-        "dutch": "nl",
-        "portuguese": "pt",
-        "russian": "ru",
-        "chinese": "zh",
-        "japanese": "ja",
-        "korean": "ko",
-        "arabic": "ar",
-        "turkish": "tr",
-        "vietnamese": "vi",
-        "thai": "th",
-    }
 
     constructor(){
         
@@ -70,7 +53,7 @@ export class SearXNGClient {
             category: string;
         }[];
     }> {
-        const searchLanguage = this.languagesList[language.toLowerCase()] || "en";
+        const searchLanguage = languagesList[language.toLowerCase()] || "en";
 
         const params = {
             "q": query,
